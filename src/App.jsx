@@ -1,13 +1,14 @@
-import { useState } from 'react'
-import Login from './components/Login'
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Login from './components/Login';
+import Success from './components/Success';
 import './App.css'
-
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <Login/>
-  )
+    <Router>
+      <Switch>
+        <Route exact path="/" component={Login} />
+        <Route path="/success" component={Success} />
+      </Switch>
+    </Router>
+  );
 }
-
-export default App
