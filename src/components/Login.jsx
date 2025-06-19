@@ -19,37 +19,38 @@ export default function Login() {
   const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
 
   function handleChange(e) {
-    const { name, value, type, checked } = e.target;
+  const { name, value, type, checked } = e.target;
 
-    setFormData(prev => ({
+  setFormData(prev => ({
+    ...prev,
+    [name]: type === 'checkbox' ? checked : value
+  }));
+
+  // Anlık validasyon
+  if (name === 'email') {
+    setErrors(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      email: emailRegex.test(value) ? '' : 'Geçerli bir email girin.'
+    }));
+  } else if (name === 'password') {
+    setErrors(prev => ({
+      ...prev,
+      password: passwordRegex.test(value)
+        ? ''
+        : 'Şifre en az 8 karakter olmalı, büyük harf, küçük harf, sayı ve özel karakter içermeli.'
     }));
   }
+}
+
 
   function handleSubmit(e) {
-    e.preventDefault();
-    let valid = true;
-    const newErrors = { email: '', password: '' };
-
-    if (!emailRegex.test(formData.email)) {
-      newErrors.email = 'Geçerli bir email girin.';
-      valid = false;
-    }
-
-    if (!passwordRegex.test(formData.password)) {
-      newErrors.password =
-        'Şifre en az 8 karakter olmalı, büyük harf, küçük harf, sayı ve özel karakter içermeli.';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-
-    if (valid) {
-      console.log('Form gönderildi:', formData);
-      history.push('/success')
-    }
+  e.preventDefault();
+  if (!errors.email && !errors.password && formData.email && formData.password && formData.checkbox) {
+    console.log('Form gönderildi:', formData);
+    history.push('/success');
   }
+}
+
 
   useEffect(() => {
   const isEmailValid = emailRegex.test(formData.email);
@@ -69,9 +70,10 @@ export default function Login() {
           name="email"
           placeholder="Enter your email"
           type="email"
+          invalid={!!errors.email}
           onChange={handleChange}
         />
-        <FormFeedback>{errors.email}</FormFeedback>
+        <FormFeedback data-testid="email-error">{errors.email}</FormFeedback>
       </FormGroup>
 
       <FormGroup>
@@ -81,9 +83,10 @@ export default function Login() {
           name="password"
           placeholder="Enter your password"
           type="password"
+          invalid={!!errors.password}
           onChange={handleChange}
         />
-        <FormFeedback>{errors.password}</FormFeedback>
+        <FormFeedback data-testid="password-error">{errors.password}</FormFeedback>
       </FormGroup>
 
       <FormGroup check>
@@ -92,6 +95,7 @@ export default function Login() {
             id="check"
             name="checkbox"
             type="checkbox"
+            data-testid="rules-checkbox"
             onChange={handleChange}
             checked={formData.checkbox}
           />{' '}
@@ -99,7 +103,7 @@ export default function Login() {
         </Label>
       </FormGroup>
 
-      <Button color="primary" type="submit" disabled={isActive}>
+      <Button color="primary" type="submit" disabled={isActive} data-testid="submit-button">
         Login
       </Button>
     </Form>

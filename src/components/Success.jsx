@@ -18,7 +18,7 @@ export default function Success() {
     >
       <Row className="mb-4">
         <Col>
-          <Alert color="success" className="text-center" style={{ fontSize: '1.5rem' }}>
+          <Alert color="success" data-testid="success-message" className="text-center" style={{ fontSize: '1.5rem' }}>
             Login Successful
           </Alert>
         </Col>
